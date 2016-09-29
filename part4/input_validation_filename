@@ -1,0 +1,72 @@
+#!/bin/bash
+# read-validate: validate input
+# Input validation using test in stead of [[]]
+# The first part is my translation into test latter part is from the book
+
+invalid_input () {
+    echo "sdf"
+    echo "Invalid input '$REPLY'" >&2
+    exit 1
+}
+read -p "Enter a single item > "
+
+#### Using test
+# input is empty (invalid)
+[ -z "$REPLY" ] && invalid_input
+# input is multiple items (invalid)
+[ $(echo $REPLY | wc -w) -gt 1 ] && invalid_input
+# is input a valid filename?
+result=$(grep -E '^[-[:alnum:]\._]+$' <<< "$REPLY")
+if [ -n "$result" ]; then
+    echo "'$REPLY' is a valid filename."
+    if [ -e "$REPLY" ]; then
+	echo "And file '$REPLY' exists."
+    else
+	echo "However, file '$REPLY' does not exist."
+    fi
+    # is input a floating point number?
+    is_float=$(grep -E '^-?[[:digit:]]*\.[[:digit:]]+$' <<< "$REPLY")
+    if [ -n "$is_float" ]; then
+	echo "'$REPLY' is a floating point number."
+    else
+	echo "'$REPLY' is not a floating point number."
+    fi
+    # is input an integer?
+    is_int=$(grep -E '^-?[[:digit:]]+$' <<< "$REPLY")
+    if [ -n "$is_int" ]; then
+	echo "'$REPLY' is an integer."
+    else
+	echo "'$REPLY' is not an integer."
+    fi
+else
+    echo "The string '$REPLY' is not a valid filename."
+fi
+
+#### Using [[]]]
+# input is empty (invalid)
+[[ -z $REPLY ]] && invalid_input
+# input is multiple items (invalid)
+(( $(echo $REPLY | wc -w) > 1 )) && invalid_input
+# is input a valid filename?
+if [[ $REPLY =~ ^[-[:alnum:]\._]+$ ]]; then
+    echo "'$REPLY' is a valid filename."
+    if [[ -e $REPLY ]]; then
+	echo "And file '$REPLY' exists."
+    else
+	echo "However, file '$REPLY' does not exist."
+    fi
+    # is input a floating point number?
+    if [[ $REPLY =~ ^-?[[:digit:]]*\.[[:digit:]]+$ ]]; then
+	echo "'$REPLY' is a floating point number."
+    else
+	echo "'$REPLY' is not a floating point number."
+    fi
+    # is input an integer?
+    if [[ $REPLY =~ ^-?[[:digit:]]+$ ]]; then
+	echo "'$REPLY' is an integer."
+    else
+	echo "'$REPLY' is not an integer."
+    fi
+else
+    echo "The string '$REPLY' is not a valid filename."
+fi
