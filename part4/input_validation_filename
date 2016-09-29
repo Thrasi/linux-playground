@@ -16,8 +16,8 @@ read -p "Enter a single item > "
 # input is multiple items (invalid)
 [ $(echo $REPLY | wc -w) -gt 1 ] && invalid_input
 # is input a valid filename?
-result=$(grep -E '^[-[:alnum:]\._]+$' <<< "$REPLY")
-if [ -n "$result" ]; then
+grep -qE '^[-[:alnum:]\._]+$' <<< "$REPLY"
+if [ $? -eq 0 ]; then
     echo "'$REPLY' is a valid filename."
     if [ -e "$REPLY" ]; then
 	echo "And file '$REPLY' exists."
@@ -25,15 +25,15 @@ if [ -n "$result" ]; then
 	echo "However, file '$REPLY' does not exist."
     fi
     # is input a floating point number?
-    is_float=$(grep -E '^-?[[:digit:]]*\.[[:digit:]]+$' <<< "$REPLY")
-    if [ -n "$is_float" ]; then
+    grep -qE '^-?[[:digit:]]*\.[[:digit:]]+$' <<< "$REPLY"
+    if [ $? -eq 0 ]; then
 	echo "'$REPLY' is a floating point number."
     else
 	echo "'$REPLY' is not a floating point number."
     fi
     # is input an integer?
-    is_int=$(grep -E '^-?[[:digit:]]+$' <<< "$REPLY")
-    if [ -n "$is_int" ]; then
+    grep -qE '^-?[[:digit:]]+$' <<< "$REPLY"
+    if [ $? -eq 0 ]; then
 	echo "'$REPLY' is an integer."
     else
 	echo "'$REPLY' is not an integer."
